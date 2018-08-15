@@ -22,80 +22,42 @@ $packageFour = [
 function dd(...$args) {
     echo '<pre>';
     foreach ($args as $arg) {
-        var_dump(print_r($arg));
+        print_r($arg);
     }
     echo '</pre>';
     die();
 }
 
 
-function combination(&$object, $package, $total)
+function combination(&$object, $packages, $index = 0, $next = true)
 {
-    for ($i = 0; $i < $total; $i++) {
-        foreach ($package['ids'] as $k => $id) {
-            for ($j = 0; $j < count($package['ids']); $j++) {
-                echo "$id<br/>";
-                $aux = [$package['package'] => $id];
-                if (!isset($object[$i])) {
-                    $object[$i] = $aux;
-                } else {
-                    $object[$i] = array_merge($aux, $object[$i]);
-                }
-                $i++;
+    //$total = count($package['ids']) * count($package['ids']);
+
+    foreach ($packages as $index => $package) {
+        $next = true;
+        if(!isset($packages[$index + 1])) {
+            $next = false;
+        }
+        foreach ($package['ids'] as $id) {
+            $aux = [$package['package'] => $id];
+            $object[] = $aux;
+            if ($next && isset($package[$index + 1])) {
+                combination($object, $package[$index + 1], $next);
             }
         }
     }
+    dd($object);
 
 }
 
 function factorial(...$packages)
 {
     $object = [];
-    foreach ($packages as $package) {
-        $total = count($package['ids']) *  count($package['ids']);
-        combination($object, $package, $total);
-    }
-    dd($object);
+    combination($object, $packages);
+
+
     exit;
 
-
-
-
-
-
-    if (count($packages) > 0 ) {
-        $object = [];
-        for($i = 0; $i < count($packages); $i++) {
-            if (count($packages[$i]["ids"]) > 0) {
-                foreach ($packages[$i]["ids"] as $k => $id) {
-                    if (isset($packages[$i + 1])) {
-                        $nextPackage = $packages[$i + 1];
-                        foreach ($nextPackage["ids"] as $y => $nextId) {
-                            if (isset($object[$k])) {
-                                $object[$k] = array_merge($object[$k], [$nextPackage["package"] => $nextId]);
-                            } else {
-                                $object[$k] = [$packages[$i]["package"] => $id];
-                            }
-                            //$object[$y] = [$packages[$i]["package"] => $nextId];
-                        }
-                    }
-
-
-//                    if (isset($packages[$i + 1])) {
-//                        foreach ($packages[$i + 1] as $y => $package) {
-//                            dd($packages[$i], $packages[$i + 1]);
-//                            if (isset($object[$k])) {
-//                                $object[$k] = array_merge($object[$k], [$packages[$i]["package"] => $id]);
-//                            } else {
-//                                $object[$k] = [$packages[$i]["package"] => $id];
-//                            }
-//                        }
-//                    }
-                }
-            }
-        }
-        dd($object);
-    }
 }
 
 var_dump(factorial($packageOne, $packageThree), factorial($packageOne, $packageTwo, $packageThree), factorial($packageOne, $packageTwo, $packageThree, $packageFour));
